@@ -1,2 +1,3 @@
 # alien-influx
-Recreation of Space Invaders is a Japanese shooting video game released in 1978 by Taito.  Referenced Eric Matthes' 2015 Python Crash Course.
+Recreation of Space Invaders, a Japanese shooting video game released in 1978 by Taito.  
+Referenced Eric Matthes' 2015 Python Crash Course.
