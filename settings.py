@@ -6,9 +6,9 @@ class Settings():
         #self.bg_color = (0, 250, 230)
         self.bg_color = (102, 105, 156)
         #self.bg_color = (60, 60, 60)
-
-        # Ship movement settings
+        # Ship settings
         self.ship_speed_factor = 2.5
+        self.ship_limit = 3
         # Laser settings
         self.bullet_speed_factor = 4
         self.bullet_width = 5
@@ -18,5 +18,5 @@ class Settings():
 
         # Alien settings
         self.alien_speed_factor = 1
-        self.fleet_drop_speed = 10
+        self.fleet_drop_speed = 100
         self.fleet_direction = 1  # Note: 1 is right and -1 is left

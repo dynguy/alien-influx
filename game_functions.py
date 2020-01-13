@@ -2,7 +2,7 @@ import sys
 import pygame
 from lasers import Laser
 from alien import Alien
-
+from time import sleep
 
 
 def check_keydown_events(event, game_settings, screen, ship, lasers):
@@ -14,6 +14,7 @@ def check_keydown_events(event, game_settings, screen, ship, lasers):
         fire_laser(game_settings, screen, ship, lasers)
     elif event.key == pygame.K_q:  # If users click Q then the game will close
         sys.exit()
+
 
 def check_keyup_events(event, ship):
     if event.key == pygame.K_RIGHT:
@@ -44,10 +45,12 @@ def update_screen(game_settings, screen, ship, aliens, lasers):
     # This is basically an illusion that shows elements moving smoothly.
     pygame.display.flip()
 
+
 def fire_laser(game_settings, screen, ship, lasers):
     if len(lasers) < game_settings.lasers_allowed:
         new_laser = Laser(game_settings, screen, ship)
         lasers.add(new_laser)
+
 
 def update_lasers(game_settings, screen, ship, aliens, lasers):
     lasers.update()
@@ -60,18 +63,18 @@ def update_lasers(game_settings, screen, ship, aliens, lasers):
         lasers.empty()
         create_fleet(game_settings, screen, ship, aliens)
 
-def update_aliens(aliens):
-    aliens.update()
 
 def get_number_aliens_x(game_settings, alien_width):
     available_space_x = game_settings.screen_width - (2 * alien_width)
     number_aliens_x = int(available_space_x / (2 * alien_width))
     return number_aliens_x
 
+
 def get_number_rows(game_settings, ship_height, alien_height):
-    available_space_y = (game_settings.screen_height - (3  * alien_height) - ship_height)
+    available_space_y = (game_settings.screen_height - (3 * alien_height) - ship_height)
     number_rows = int(available_space_y / (2 * alien_height))
     return number_rows
+
 
 def create_alien(game_settings, screen, aliens, alien_number, row_number):
     alien = Alien(game_settings, screen)
@@ -80,6 +83,7 @@ def create_alien(game_settings, screen, aliens, alien_number, row_number):
     alien.rect.x = alien.x
     alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
     aliens.add(alien)
+
 
 def create_fleet(game_settings, screen, ship, aliens):
     alien = Alien(game_settings, screen)
@@ -90,18 +94,44 @@ def create_fleet(game_settings, screen, ship, aliens):
         for alien_number in range(number_aliens_x):
             create_alien(game_settings, screen, aliens, alien_number, row_num)
 
+
 def check_fleet_edges(game_settings, aliens):
     for alien in aliens.sprites():
         if alien.check_edges():
             change_fleet_direction(game_settings, aliens)
             break
 
+
 def change_fleet_direction(game_settings, aliens):
     for alien in aliens.sprites():
         alien.rect.y += game_settings.fleet_drop_speed
     game_settings.fleet_direction *= -1
 
-def update_aliens(game_settings, aliens):
+
+def update_aliens(game_settings, stats, screen, ship, aliens, lasers):
     check_fleet_edges(game_settings, aliens)
     aliens.update()
+    if pygame.sprite.spritecollideany(ship, aliens):
+        ship_hit(game_settings, stats, screen, ship, aliens, lasers)
+    test_aliens_bottom(game_settings, stats, screen, ship, aliens, lasers)
 
+
+def ship_hit(game_settings, stats, screen, ship, aliens, lasers):
+    if stats.ships_left > 0:
+        stats.ships_left = -1
+        aliens.empty()
+        lasers.empty()
+        create_fleet(game_settings, screen, ship, aliens)
+        ship.center_ship()
+        sleep(0.5)
+    else:
+        stats.game_active = False
+
+
+def test_aliens_bottom(game_settings, stats, screen, ship, aliens, lasers):
+    screen_rect = screen.get_rect()
+
+    for alien in aliens.sprites():
+        if alien.rect.bottom >= screen_rect.bottom:
+            ship_hit(game_settings, stats, screen, ship, aliens, lasers)
+            break
