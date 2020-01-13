@@ -23,7 +23,7 @@ def check_keyup_events(event, ship):
         ship.moving_left = False
 
 
-def check_events(game_settings, screen, ship, lasers):
+def check_events(game_settings, screen, stats, play_button, ship, aliens, lasers):
     for event in pygame.event.get():
         # For loop that watches for keyboard and mouse events
         if event.type == pygame.QUIT:
@@ -32,15 +32,37 @@ def check_events(game_settings, screen, ship, lasers):
             check_keydown_events(event, game_settings, screen, ship, lasers)
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, ship)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            # mouse_y = pygame.mouse.get_pos()
+            check_play_button(game_settings, screen, stats, play_button, ship, aliens, lasers, mouse_x, mouse_y)
 
 
-def update_screen(game_settings, screen, ship, aliens, lasers):
+# Starts a new game when the player clicks play
+def check_play_button(game_settings, screen, stats, play_button, ship, aliens, lasers, mouse_x, mouse_y):
+    button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
+
+    if button_clicked and not stats.game_active:
+        pygame.mouse.set_visible(False)  # This will hide the mouse cursor
+        stats.reset_stats()
+        stats.game_active = True
+        aliens.empty()
+        lasers.empty()
+        create_fleet(game_settings, screen, ship, aliens)
+        ship.center_ship()
+
+
+def update_screen(game_settings, screen, stats, ship, aliens, lasers, play_button):
     # Continually updates the background color in the while loop.
     screen.fill(game_settings.bg_color);
     for laser in lasers.sprites():
         laser.draw_laser()
     ship.blitme()
     aliens.draw(screen)
+
+    if not stats.game_active:
+        play_button.draw_button()
+
     # Make the most recently drawn screen visible.
     # This is basically an illusion that shows elements moving smoothly.
     pygame.display.flip()
@@ -118,15 +140,16 @@ def update_aliens(game_settings, stats, screen, ship, aliens, lasers):
 
 def ship_hit(game_settings, stats, screen, ship, aliens, lasers):
     if stats.ships_left > 0:
-        stats.ships_left = -1
+        stats.ships_left -= 1
         aliens.empty()
         lasers.empty()
         create_fleet(game_settings, screen, ship, aliens)
         ship.center_ship()
         sleep(0.5)
+
     else:
         stats.game_active = False
-
+        pygame.mouse.set_visible(True)
 
 def test_aliens_bottom(game_settings, stats, screen, ship, aliens, lasers):
     screen_rect = screen.get_rect()
