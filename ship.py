@@ -6,6 +6,7 @@ import pygame
 class Ship():
 
     def __init__(self, game_settings, screen):
+        super(Ship, self).__init__()  # Makes sure Ship inherits from Sprite
         self.screen = screen
         self.game_settings = game_settings
         # Load the ship image and get its rect

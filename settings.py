@@ -10,13 +10,36 @@ class Settings():
         self.ship_speed_factor = 2.5
         self.ship_limit = 3
         # Laser settings
-        self.bullet_speed_factor = 4
-        self.bullet_width = 5
-        self.bullet_height = 15
-        self.bullet_color = 255, 0, 0
+        self.laser_speed_factor = 4
+        self.laser_width = 5
+        self.laser_height = 15
+        self.laser_color = 255, 0, 0
         self.lasers_allowed = 7
 
         # Alien settings
         self.alien_speed_factor = 1
-        self.fleet_drop_speed = 100
+        self.fleet_drop_speed = 10
         self.fleet_direction = 1  # Note: 1 is right and -1 is left
+
+        # Leveling up speed
+        self.speed_scale = 1.5
+        self.initialize_dynamic_settings()
+
+        # Scoring settings
+        self.score_scale = 1.5
+
+    def initialize_dynamic_settings(self):
+        self.ship_speed_factor = 1.5
+        self.laser_speed_factor = 3
+        self.alien_speed_factor = 1
+        self.fleet_direction = 1  # Note 1 is right and -1 is left
+        self.alien_point_worth = 50
+
+
+    def increase_speed(self):
+        self.ship_speed_factor *= self.speed_scale
+        self.laser_speed_factor *= self.speed_scale
+        self.alien_speed_factor *= self.speed_scale
+
+        self.alien_point_worth = int(self.alien_point_worth * self.score_scale)
+        # print(self.alien_point_worth)

@@ -7,6 +7,7 @@ from pygame.sprite import Group
 from alien import Alien
 from game_stats import GameStats
 from button import Button
+from scoreboard import Scoreboard
 
 def run_game():
     # Initialize game properly and create a screen object
@@ -30,20 +31,25 @@ def run_game():
 
     # Create the fleet of aliens
     gf.create_fleet(game_settings, screen, ship, aliens)
+    # Settings stats
     stats = GameStats(game_settings)
+    # Creating play/start button
     play_button = Button(game_settings, screen, "Play!")
+    sb = Scoreboard(game_settings, screen, stats)
+
 
     # Main loop for the game.
     while True:
         # For loop that watches for keyboard and mouse events
-        gf.check_events(game_settings, screen, stats, play_button, ship, aliens, lasers)
+        gf.check_events(game_settings, screen, stats, sb, play_button, ship, aliens, lasers)
         if stats.game_active:
             ship.update()
-            gf.update_lasers(game_settings, screen, ship, aliens, lasers)
-            gf.update_aliens(game_settings, stats, screen, ship, aliens, lasers)
+            gf.update_lasers(game_settings, screen, stats, sb, ship, aliens, lasers)
+            gf.update_aliens(game_settings, stats, screen, sb, ship, aliens, lasers)
 
         # Takes 3 parameters and uses them to update the screen illusion
-        gf.update_screen(game_settings, screen, stats, ship, aliens, lasers, play_button)
+        gf.update_screen(game_settings, screen, stats, sb, ship, aliens, lasers, play_button)
+
 
 
 
